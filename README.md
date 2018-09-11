@@ -1,1 +1,14 @@
 # hyperon18.github.io
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <!-- three.jsを読み込む -->
+  <script src="three.js"></script>
+  <!-- index.jsを読み込む -->
+  <script src="index.js"></script>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+</body>
+</html>
