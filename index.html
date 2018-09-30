@@ -9,6 +9,94 @@
 <meta name="GENERATOR" content="JustSystems Homepage Builder Version 21.0.5.0 for Windows">
 <title>Matsushitaのホームページ</title>
 <script type="text/javascript"></script> <script type="text/javascript"></script>
+
+
+
+
+<script src="018_3.js" type="text/javascript"></script>
+        <script src="minMatrix.js" type="text/javascript"></script>
+        
+        <script id="vs" type="x-shader/x-vertex">
+attribute vec3 position;
+attribute vec3 normal;
+attribute vec4 color;
+uniform   mat4 mvpMatrix;
+uniform   mat4 invMatrix;
+uniform   vec3 lightDirection;
+varying   vec4 vColor;
+
+void main(void){
+    vColor = color;
+    gl_Position = mvpMatrix * vec4(position, 1.0);
+}
+        </script>
+        
+        <script id="fs" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec4 vColor;
+
+void main(void){
+    gl_FragColor = vColor;
+}
+        </script>
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/89/three.min.js"></script>
+  <script>
+    // ページの読み込みを待つ
+    window.addEventListener('load', init);
+
+    function init() {
+
+      // サイズを指定
+      const width = 120;
+      const height = 120;
+
+      // レンダラーを作成
+      const renderer = new THREE.WebGLRenderer({
+        canvas: document.querySelector('#myCanvas')
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+
+      // シーンを作成
+      const scene = new THREE.Scene();
+
+      // カメラを作成
+      const camera = new THREE.PerspectiveCamera(45, width / height);
+      camera.position.set(0, 0, +1000);
+
+      // 箱を作成
+      const geometry = new THREE.BoxGeometry(400, 400, 400);
+      const material = new THREE.MeshNormalMaterial();
+      const box = new THREE.Mesh(geometry, material);
+      scene.add(box);
+
+      tick();
+
+      // 毎フレーム時に実行されるループイベントです
+      function tick() {
+        box.rotation.x += 0.02;
+        box.rotation.y += 0.05;
+        renderer.render(scene, camera); // レンダリング
+
+        requestAnimationFrame(tick);
+      }
+    }
+  </script>
+
+
+
+
+
+
+
+
 <link rel="stylesheet" type="text/css" href="">
 </head>
 <body style="margin-top : 0px;margin-left : 0px;margin-right : 0px;margin-bottom : 0px;" bgcolor="#0000ff" background="">
@@ -62,15 +150,28 @@
             </tr>
             <tr>
               <td width="167" align="center">
-		<img src="/image1.png" alt="画像１" width="120" height="120" border="0"><br>
+		<img src="image1.png" alt="画像１" width="120" height="120" border="0"><br>
               <br>
               <br>
               <br>
-              <img src="/image2.png" alt="画像２" width="120" height="120"><br>
+		<img src="image2.png" alt="画像２" width="120" height="120" border="0"><br>
               <br>
               <br>
               <br>
-              <img src="/gl1.png" alt="画像３" width="120" height="120"></td>
+
+
+
+
+
+    
+        <canvas id="c3"></canvas>
+    
+
+
+
+
+
+</td>
               <td>
               <table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
                 <tbody>
@@ -110,7 +211,7 @@
             </tr>
             <td width="167" align="center">
               
-              <img src="/gl2.png" alt="3Dイラスト" width="120" height="120"></td>
+    <canvas id="myCanvas"></canvas>
               <td>
               <table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
                 <tbody>
@@ -137,7 +238,9 @@
             </tr>
           </tbody>
         </table>
-        
+       
+
+
 
             </tr>
           </tbody>
@@ -181,5 +284,4 @@
     </tbody>
   </table>
 </div>
-
 </body></html>
