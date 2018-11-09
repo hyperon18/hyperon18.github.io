@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<title> regular octahedron </title>
+<meta charset="utf-8">
+
+<body onload="startup()">
+	<canvas id="GLCanvas" width="800" height="800"></canvas>
+
+<script type="text/javascript">
+
+
+var timeid = 0;
+var vec = [];
+var theta;
+var i;
+var idx = 0;
+var idy = 0;
+var idz = 0;
+var key;
+var dis = -5;
+var mov = 0;
+var shiftk = 0.2;
+var camerarot;
+
+
+
+
+function RotXY(vec, theta){
+var res = [];
+var n = vec.length;
+for(i=0;i< n/3;i++){
+res[0+3*i] = vec[0+3*i]*Math.cos(2*Math.PI*theta/360) - vec[1+3*i]*Math.sin(2*Math.PI*theta/360);
+res[1+3*i] = vec[0+3*i]*Math.sin(2*Math.PI*theta/360) + vec[1+3*i]*Math.cos(2*Math.PI*theta/360);
+res[2+3*i] = vec[2+3*i];
+}
+return res
+}
+
+function RotYZ(vec, theta){
+var res = [];
+var n = vec.length;
+for(i=0;i< n/3;i++){
+res[0+3*i] = vec[0+3*i];
+res[1+3*i] = vec[1+3*i]*Math.cos(2*Math.PI*theta/360) - vec[2+3*i]*Math.sin(2*Math.PI*theta/360);
+res[2+3*i] = vec[1+3*i]*Math.sin(2*Math.PI*theta/360) + vec[2+3*i]*Math.cos(2*Math.PI*theta/360);
+}
+return res
+}
+
+function RotZX(vec, theta){
+var res = [];
+var n = vec.length;
+for(i=0;i< n/3;i++){
+res[0+3*i] = vec[2+3*i]*Math.sin(2*Math.PI*theta/360) + vec[0+3*i]*Math.cos(2*Math.PI*theta/360);
+res[1+3*i] = vec[1+3*i];
+res[2+3*i] = vec[2+3*i]*Math.cos(2*Math.PI*theta/360) - vec[0+3*i]*Math.sin(2*Math.PI*theta/360);
+}
+return res
+}
+
+
+
+
+
+function PRJ(vec, cameraposi, camerarot, size){
+var res = [];
+var n = vec.length;
+
+for(i=0;i<n/3;i++){
+res[0+3*i] = vec[0+3*i];
+res[1+3*i] = vec[1+3*i];
+res[2+3*i] = vec[2+3*i] - cameraposi;
+}
+
+for(i=0;i< n/3;i++){
+res[0+3*i] = vec[0+3*i]*Math.cos(2*Math.PI*camerarot/360) - vec[1+3*i]*Math.sin(2*Math.PI*camerarot/360);
+res[1+3*i] = vec[0+3*i]*Math.sin(2*Math.PI*camerarot/360) + vec[1+3*i]*Math.cos(2*Math.PI*camerarot/360);
+res[2+3*i] = vec[2+3*i];
+}
+
+for(i=0;i<n/3;i++){
+res[0+3*i] = vec[0+3*i] - cameraposi*Math.sin(2*Math.PI*camerarot/360);
+res[1+3*i] = vec[1+3*i];
+res[2+3*i] = vec[2+3*i] + cameraposi*Math.cos(2*Math.PI*camerarot/360);
+}
+
+for(i=0;i<n/3;i++){
+res[0+3*i] = size * vec[0+3*i]/(-cameraposi+vec[2+3*i]);
+res[1+3*i] = size * vec[1+3*i]/(-cameraposi+vec[2+3*i]);
+res[2+3*i] = vec[2+3*i];
+}
+return res
+}
+
+
+
+
+
+
+
+window.addEventListener('keydown',onkeydown, false);
+function onkeydown(event){
+var keyCode = event.keyCode;
+
+if(event.keyCode == 16){
+shiftk = shiftk*(-1);
+}
+
+if (event.keyCode == 88) {
+idx -= shiftk;
+}
+if (event.keyCode == 89) {
+idy -= shiftk;
+}
+if (event.keyCode == 90) {
+idz -= shiftk;
+}
+
+else if (event.keyCode == 38) {
+dis += 0.1;
+}
+else if (event.keyCode == 40) {
+dis -= 0.1;
+}
+else if (event.keyCode == 39) {
+mov += 1;
+}
+else if (event.keyCode == 37) {
+mov -= 1;
+}
+
+else{
+}
+}
+
+
+
+
+
+
+
+//IDの取得
+	var canvas = document.getElementById("GLCanvas");
+
+
+
+//コンテキストを取得
+	var gl = null;
+	gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+	if(gl){
+		gl.viewportWidth = canvas.width;
+		gl.viewportHeight = canvas.height;
+	}else{
+		alert("Failed to create WebGL context");
+	}
+
+
+
+//シェーダーのセットアップ
+	var vertexShaderSource=
+	"attribute vec3 position;			\n"+
+	"attribute vec4 color;				\n"+
+	"varying vec4 vColor;				\n"+
+	"void main(){					\n"+
+	"vColor = color;				\n"+
+	"gl_Position = vec4(position,1.0);		\n"+
+	"}						\n";
+
+	var fragmentShaderSource=
+	"precision mediump float;			\n"+
+	"varying vec4 vColor;				\n"+
+	"void main(){					\n"+
+	"gl_FragColor = vColor;				\n"+
+	"}						\n";
+
+
+
+
+
+
+//位置座標
+var vertex_position = [
+ 0.5, 0.0, 0.5,
+-0.5, 0.0, 0.5,
+-0.5, 0.0,-0.5,
+ 0.5, 0.0,-0.5,
+ 0.0, 1.0/Math.sqrt(2.0), 0.0,
+ 0.0,-1.0/Math.sqrt(2.0), 0.0
+];
+
+
+//各頂点の色
+var vertex_color = [
+ 1.0, 0.0, 0.0, 1.0,
+ 0.0, 1.0, 0.0, 1.0,
+ 0.0, 1.0, 1.0, 1.0,
+ 1.0, 0.0, 1.0, 1.0,
+ 1.0, 1.0, 0.0, 1.0,
+ 0.0, 0.0, 1.0, 1.0
+];
+
+
+//ポリゴンを構成する三角形の頂点番号
+var index = [
+0, 4, 1,
+1, 4, 2,
+2, 4, 3,
+3, 4, 0,
+1, 5, 0,
+2, 5, 1,
+3, 5, 2,
+0, 5, 3
+];
+
+
+
+
+function startup(){
+key = 0;
+
+
+
+	//頂点シェーダーをロード
+var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vertexShader, vertexShaderSource);
+gl.compileShader(vertexShader);
+
+if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
+	alert("Error compiling shader" + gl.getShaderInfoLog(vertexShader));
+	gl.deleteShader(vertexShader);
+	return null;
+}
+
+
+
+	//フラグメントシェーダーをロード
+var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fragmentShader, fragmentShaderSource);
+gl.compileShader(fragmentShader);
+
+if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
+	alert("Error compiling shader" + gl.getShaderInfoLog(fragmentShader));
+	gl.deleteShader(fragmentShader);
+	return null;
+}
+
+
+
+
+// shaderProgram
+var prg = gl.createProgram();
+gl.attachShader(prg, vertexShader);
+gl.attachShader(prg, fragmentShader);
+gl.linkProgram(prg);
+
+
+if(!gl.getProgramParameter(prg, gl.LINK_STATUS)){
+	alert("Failed to setup shaders");
+}
+
+gl.useProgram(prg);
+
+
+var attLocation = new Array(2);
+attLocation[0] = gl.getAttribLocation(prg,"position");
+attLocation[1] = gl.getAttribLocation(prg,"color");
+
+
+    var attStride = new Array(2);
+    attStride[0] = 3;
+    attStride[1] = 4;
+
+
+
+
+
+
+//位置情報のバッファのセットアップ
+	var position_vbo = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, position_vbo);
+	gl.vertexAttribPointer(attLocation[0], attStride[0], gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(attLocation[0]);
+
+
+	onkeydown;
+
+	vertex_position = RotXY(vertex_position, idz);
+	vertex_position = RotYZ(vertex_position, idx);
+	vertex_position = RotZX(vertex_position, idy);
+	vertex_position_prj = PRJ(vertex_position, dis, mov, 4);
+
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex_position_prj), gl.STATIC_DRAW);
+
+
+
+
+//色情報のバッファのセットアップ
+
+	var color_vbo = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, color_vbo);
+	gl.vertexAttribPointer(attLocation[1], attStride[1], gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(attLocation[1]);
+
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex_color), gl.STATIC_DRAW);
+
+
+
+
+//iboのセットアップ
+	var ibo = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(index), gl.STATIC_DRAW);
+
+
+
+
+//カリングと深度テスト
+gl.enable(gl.DEPTH_TEST);
+gl.enable(gl.CULL_FACE);
+gl.depthFunc(gl.LEQUAL);
+gl.frontFace(gl.CW);
+
+
+
+
+//画面を初期化する色を設定
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.clearDepth(1.0);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+//描画
+	gl.viewport(0,0,gl.viewportWidth,gl.viewportHeight);
+
+
+	gl.drawElements(gl.TRIANGLES, index.length, gl.UNSIGNED_SHORT, 0);
+	gl.flush();
+
+
+//繰り返し
+setTimeout(startup, 1000/60);
+timeid += 1;
+}
+
+
+</script>
+</head>
+</body>
+</html>
