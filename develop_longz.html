@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<title>トップ</title>
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body style="margin-top : 0px;margin-left : 0px;margin-right : 0px;margin-bottom : 0px;" bgcolor="#eeeeee">
+<div align="center">
+  <table summary="メインテーブル" width="800" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+    <tbody>
+
+
+      
+
+      <tr>
+        <td bgcolor="#ffffff" align="center">
+        <table width="800" cellspacing="0">
+          <tbody>
+          
+            <tr>
+		<td width="60" height="60" bgcolor="#ffffff" align="left">
+		<canvas id="Canvas1" width="60" height="60"></canvas>
+		<script>
+      		var canvas1 = document.getElementById("Canvas1");
+      		var context = canvas1.getContext('2d');
+		let ctx1 = canvas1.getContext('2d');
+		ctx1.beginPath();
+		let g = ctx1.createRadialGradient(30, 30, 20, 30, 30, 30);
+		g.addColorStop(0.0, 'yellow');
+		g.addColorStop(1.0, 'black');
+		ctx1.fillStyle = g;
+		ctx1.fillRect(0, 0, 60, 60);
+		ctx1.fillStyle = "#6600ff";
+		ctx1.arc(30, 30, 20, 0, 360/180*Math.PI);
+		ctx1.fill();
+
+		ctx1.beginPath();
+		ctx1.fillStyle = "#ffffff";
+		ctx1.arc(35, 30, 15, 0, 360/180*Math.PI);
+		ctx1.fill();
+    		</script>
+		</td>
+		<td width="340" height="60" bgcolor="#ffffff" align=left" valign="top"><font size="3" face="Impact">Kazuki Matsushita's Website</font>
+		<br><font size="2">色々なネタを紹介していきます</font></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href="index.html"><font size="2">HOME</font></a></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href="jikoshoukai.html"><font size="2">自己紹介</font></a></td>
+                <td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href=""><font size="2">ブログ</font></a></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href="develop.html"><font size="2">開発したもの</font></a></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href=""><font size="2">リンク</font></a></td>
+            </tr>
+          </tbody>
+        </table>
+     
+       	<hr>
+
+        <br>
+	<table>
+        <tr>
+	<div style="font-size: 16pt; color: #000000; background-color: #ccccff">
+		多倍長演算
+	</div>
+	<tr>
+	</table>
+	</br>
+
+
+        <table width="750" border="0">
+          <tbody>
+		<td width="750" bgcolor="#ffffff" align="left" valign="bottom">
+	<font size="5">背景</font>
+	<hr>
+<font size="3">現在使われているパソコンは64bitのものがほとんどだと思います。Windows XP世代のパソコンは32bitが多いみたいです。
+32bitのパソコンの問題点はメモリが約4.3GB(2の32乗バイト)までしか使うことができないことで（いわゆる4GBの壁）、この壁の関係から今のパソコンはほとんど64bitになっています。(ちなみに遥か昔の16bitのパソコンは65536バイトのメモリしか使えなかったというのだから恐ろしいw)
+<br>
+一方で64bitのCPUの特徴として64bit長の計算を最も効率的に行うことができます。（整数演算でも浮動小数点演算でもハードウェアで実行するので高速です）
+物理のシミュレーションやゲームの物理演算などでは64bitもあれば精度（桁数）的には十分なんですが、RSA暗号の実装などでは何千bitもの桁数の数字を扱うので普通のlong int型（Windowsの場合はlong long int型）で計算すると桁が溢れます。
+このような場合、多倍長演算をソフトウェアで実装する必要があります。この方法について論じていこうと思います。</font>
+
+<br>
+<br>
+<br>
+<br>
+	<font size="5">基礎知識</font>
+<hr>
+<font size="3">
+64bitのCPUによってハードウェアで扱える数値型にはどのようなものがあるのでしょうか。以下にその具体例を並べてみました。
+<br>
+<br>
+
+<table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
+                <tbody>
+                  <tr>
+                <td width="170" bgcolor="#f4f4f4">型名</td>
+                <td width="170" bgcolor="#f4f4f4">C言語での型</td>
+		<td width="170" bgcolor="#f4f4f4">扱える数値</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">8bit整数型</td>
+                <td bgcolor="#ffffff">char</td>
+		<td bgcolor="#ffffff">-128～+127</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">8bit整数型（符合なし）</td>
+                <td bgcolor="#ffffff">unsigned char</td>
+		<td bgcolor="#ffffff">0～+255</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">16bit整数型</td>
+                <td bgcolor="#ffffff">short</td>
+		<td bgcolor="#ffffff">-32,768～+32,767</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">16bit整数型（符合なし）</td>
+                <td bgcolor="#ffffff">unsigned short</td>
+		<td bgcolor="#ffffff">0～+65,535</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">32bit整数型</td>
+                <td bgcolor="#ffffff">int</td>
+		<td bgcolor="#ffffff">-2,147,483,648～+2,147,483,647</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">32bit整数型（符合なし）</td>
+                <td bgcolor="#ffffff">unsigned int</td>
+		<td bgcolor="#ffffff">0～+4,294,967,295</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">64bit整数型</td>
+                <td bgcolor="#ffffff">long long int</td>
+		<td bgcolor="#ffffff">-9,223,372,036,854,775,808～+9,223,372,036,854,775,807</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">64bit整数型（符合なし）</td>
+                <td bgcolor="#ffffff">unsigned long long int</td>
+		<td bgcolor="#ffffff">0～+18,446,744,073,709,551,615</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">16bit浮動小数点型</td>
+                <td bgcolor="#ffffff"></td>
+		<td bgcolor="#ffffff">+-6.10×10^-5～6.55×10^4</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">32bit浮動小数点型</td>
+                <td bgcolor="#ffffff">float</td>
+		<td bgcolor="#ffffff">+-1.18×10^-38 ～ 3.40×10^38</td>
+                  </tr>
+
+                  <tr>
+                <td bgcolor="#ffffff">64bit浮動小数点型</td>
+                <td bgcolor="#ffffff">double</td>
+		<td bgcolor="#ffffff">+-2.23×10^-308 ～ 1.79×10^308</td>
+                  </tr>
+
+                </tbody>
+              </table>
+
+
+<br>
+整数型は一番桁の大きいビットを符号、それ以外のビットを数値に使っています。
+<br>
+一方で浮動小数点型は少し複雑です。半精度(16bit)浮動小数点型は10bit、単精度(32bit)浮動小数点型は23bit、倍精度(64bit)浮動小数点型は52bitを仮数部（有効数字）に当てています。図で表すとこんな感じです。
+<br>
+<img src="float.png" alt="float">
+<img src="double.png" alt="double">
+<br>
+<br>
+Javascriptは浮動小数点型しか使えないため浮動小数点型を用いて実装してみようと思います。
+
+
+</font>
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<font size="5">テスト</font>
+<hr>
+<font size="3">
+半角数字、二進数の正の整数のみ
+<form name="test" action="#">
+    <p>a1:</p>
+    <p><textarea name="a1" id="a1" cols="100" rows="5" onkeyup="strcheck(this.form, this.value)"></textarea></p>
+    <p>a2:</p>
+    <p><textarea name="a2" id="a2" cols="100" rows="5" onkeyup="strcheck(this.form, this.value)"></textarea></p>
+<input type="button" value="a1+a2" onclick="plus()">
+<input type="button" value="clear" onclick="clr()"><br>
+<p><textarea name="result" cols="100" rows="10" readonly></textarea></p>
+</form>
+
+<script>
+function strcheck(frm,obj){
+var chr1 = test.a1.value;
+var str;
+var errorcode = 0;
+if(chr1.length>5000){
+errorcode = 1;
+}
+for(var i=0;i<chr1.length;i++){
+str = chr1.charAt(i);
+if(str=="-"&&i!=0){
+errorcode = 3;
+}
+if(str!=0&&str!=1){
+errorcode = 2;
+}
+}
+var chr2 = test.a2.value;
+if(chr2.length>5000){
+errorcode = 1;
+}
+for(var i=0;i<chr2.length;i++){
+str = chr2.charAt(i);
+if(str=="-"&&i!=0){
+errorcode = 3;
+}
+if(str!=0&&str!=1){
+errorcode = 2;
+}
+}
+
+
+if(errorcode==1){
+test.result.value = "エラー：文字数オーバー";
+}
+else if(errorcode==2){
+test.result.value = "エラー：入力不可能な文字が含まれています。";
+}
+else if(errorcode==3){
+test.result.value = "エラー：マイナスの位置が間違っています。";
+}
+else{
+test.result.value = "";
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function plus(){
+var i,j;
+var m10;
+var chr1 = test.a1.value;
+var chr2 = test.a2.value;
+var NA1=[];
+var NA2=[];
+var nNA1=[];
+var nNA2=[];
+var RES=[];
+var na1="";
+var na2="";
+var res="";
+m10=1;
+var sign_a1=0; //0なら正、1なら負
+var sign_a2=0;
+var sign_res=0;
+var resd50;
+
+if(chr1.charAt(0)=="-"){ //マイナスが付いてるか判定
+sign_a1=1;
+}
+else{
+sign_a1=0;
+}
+
+
+//格納
+for(i=0;i<chr1.length;i++){
+NA1.unshift(Number(chr1.charAt(i))); 
+}
+for(i=0;i<chr2.length;i++){
+NA2.unshift(Number(chr2.charAt(i))); 
+}
+
+
+//桁揃え
+var RESlen = Math.max(chr1.length,chr2.length);
+for(i=NA1.length;i<RESlen;i++){
+NA1[i]=0;
+}
+for(i=NA2.length;i<RESlen;i++){
+NA2[i]=0;
+}
+
+
+//和演算
+RES[0]=NA1[0]+NA2[0];
+for(i=1;i<RESlen;i++){
+if(RES[i-1]<2){
+RES[i]=NA1[i]+NA2[i];
+}
+else{
+RES[i]=NA1[i]+NA2[i]+1;
+RES[i-1]-=2;
+}
+}
+
+if(RES[RESlen-1]>1){
+RES[RESlen-1]-=2;
+RES[RESlen]=1;
+RESlen+=1;
+}
+
+
+
+//出力
+for(i=0;i<RESlen;i++){
+res+=String(RES[RESlen-i-1]);
+}
+
+test.result.value = res;　//結果出力
+}
+
+
+
+
+
+
+
+
+
+
+function plus_internal(NA1, NA2){
+var i,j;
+var m10;
+var chr1 = test.a1.value;
+var chr2 = test.a2.value;
+var nNA1=[];
+var nNA2=[];
+var RES=[];
+var na1="";
+var na2="";
+var res="";
+m10=1;
+var sign_a1=0; //0なら正、1なら負
+var sign_a2=0;
+var sign_res=0;
+var resd50;
+
+if(chr1.charAt(0)=="-"){ //マイナスが付いてるか判定
+sign_a1=1;
+}
+else{
+sign_a1=0;
+}
+
+
+//格納
+for(i=0;i<chr1.length;i++){
+NA1.unshift(Number(chr1.charAt(i))); 
+}
+for(i=0;i<chr2.length;i++){
+NA2.unshift(Number(chr2.charAt(i))); 
+}
+
+
+//桁揃え
+var RESlen = Math.max(chr1.length,chr2.length);
+for(i=NA1.length;i<RESlen;i++){
+NA1[i]=0;
+}
+for(i=NA2.length;i<RESlen;i++){
+NA2[i]=0;
+}
+
+
+//和演算
+RES[0]=NA1[0]+NA2[0];
+for(i=1;i<RESlen;i++){
+if(RES[i-1]<2){
+RES[i]=NA1[i]+NA2[i];
+}
+else{
+RES[i]=NA1[i]+NA2[i]+1;
+RES[i-1]-=2;
+}
+}
+
+if(RES[RESlen-1]>1){
+RES[RESlen-1]-=2;
+RES[RESlen]=1;
+RESlen+=1;
+}
+
+
+//返り値
+return RES;
+}
+
+
+
+
+
+
+
+
+
+
+function seki(){
+var i,j;
+var m10;
+var chr1 = test.a1.value;
+var chr2 = test.a2.value;
+var NA1=[];
+var NA2=[];
+var nNA1=[];
+var nNA2=[];
+var RES=[];
+var na1="";
+var na2="";
+var res="";
+m10=1;
+var sign_a1=0; //0なら正、1なら負
+var sign_a2=0;
+var sign_res=0;
+var resd50;
+
+if(chr1.charAt(0)=="-"){ //マイナスが付いてるか判定
+sign_a1=1;
+}
+else{
+sign_a1=0;
+}
+
+
+//格納
+for(i=0;i<chr1.length;i++){
+NA1.unshift(Number(chr1.charAt(i))); 
+}
+for(i=0;i<chr2.length;i++){
+NA2.unshift(Number(chr2.charAt(i))); 
+}
+
+
+//桁揃え
+var RESlen = Math.max(chr1.length,chr2.length);
+for(i=NA1.length;i<RESlen;i++){
+NA1[i]=0;
+}
+for(i=NA2.length;i<RESlen;i++){
+NA2[i]=0;
+}
+
+RES = plus_internal(NA1,NA2);
+
+//出力
+for(i=0;i<RESlen;i++){
+res+=String(RES[RESlen-i-1]);
+}
+
+test.result.value = res;　//結果出力
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+function clr(){
+test.a1.value = "";
+test.a2.value = "";
+test.result.value = "";
+}
+</script>
+
+
+</font>
+
+
+
+
+
+</td>
+            <tr>
+              <td colspan="2" style="font-size : 13pt;" height="30"></td>
+            </tr>
+            <tr>
+              <td width="200" align="center">
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+
+
+
+
+
+
+</td>
+              <td>
+              
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" align="right"><a href="#0">ページ上部へ▲</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+
+	<br>
+        <table width="780" border="0">
+         
+		<tbody>
+            <tr>
+              <td colspan="2" style="font-size : 13pt;" height="30"></td>
+            </tr>
+            <td width="200" align="center">
+              
+
+              <td>
+              <table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
+              
+        
+              <table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
+                
+
+              </table>
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
+       
+
+
+
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <br>
+        <br>
+        </td>
+      </tr>
+      <tr>
+        <td style="height : 50px;" valign="bottom" bgcolor="#0000ff" align="center">
+	<a href="index.html">HOME</a>｜
+	<a href="jikoshoukai.html">自己紹介</a>｜
+	<a href="">ブログ</a>｜
+	<a href="develop.html">開発したもの</a> |
+	<a href="">リンク</a></td>
+      </tr>
+      <tr>
+        <td style="height : 50px;" bgcolor="#0000ff" align="center"><font style="font-size : 8pt;" color="#000000">&nbsp;<br>
+        掲載内容の無断転載は禁じます。</font></td>
+      </tr>
+      <tr>
+        <td style="font-size : 10pt;color : white;" height="100" bgcolor="#0000ff" background="" align="center"><strong style="font-size : 12pt;"></strong><br>
+        連絡先 : @hyperon18<br>
+        <font style="font-size : 8pt;" color="#000000">Copyright (ｃ) Kazuki Matsushita  　All Rights Reserved.</font></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</body></html>
