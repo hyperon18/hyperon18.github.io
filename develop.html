@@ -1,128 +1,195 @@
 <!DOCTYPE html>
 <html lang="ja"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta http-equiv="Content-Style-Type" content="text/css">
-<meta http-equiv="Content-Script-Type" content="text/javascript">
-<meta name="description" content="テストページです">
-<meta name="keywords" content="ホームページ,html,css,javascript,WebGL">
-<meta name="robots" content="ALL">
-<meta name="GENERATOR" content="JustSystems Homepage Builder Version 21.0.5.0 for Windows">
-<title>開発したもの</title>
-<script type="text/javascript"></script> <script type="text/javascript"></script>
+<title>トップ</title>
+
+
+
+
+
+
+
 
 
 
 
 </head>
-<body style="margin-top : 0px;margin-left : 0px;margin-right : 0px;margin-bottom : 0px;" background="tex.jpg">
+<body style="margin-top : 0px;margin-left : 0px;margin-right : 0px;margin-bottom : 0px;" bgcolor="#eeeeee">
 <div align="center">
   <table summary="メインテーブル" width="800" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
     <tbody>
-      <tr>
-        <td valign="top" bgcolor="#ffffff" align="center">
 
 
-       
-        </td>
-      </tr>
+      
 
       <tr>
-        <td height="50" bgcolor="#888800" align="center"><b style="font-size : 14pt;color : #0000ff;"><b style="font-size : 28pt;color : #00ff00;">開発したもの</b></b></td>
-      </tr>
-      <tr>
-        <td bgcolor="#888888" align="center">
-        <table width="800" cellspacing="0" cellpadding="0" border="0">
+        <td bgcolor="#ffffff" align="center">
+        <table width="800" cellspacing="0">
           <tbody>
+          
             <tr>
-     		<td align="right"><a name="0" id="viewTime">
-		<script type="text/javascript">
-		function clock() {
-		document.getElementById("viewTime").innerHTML = showdate();
-		}
-		function showdate(){
-			var date = new Date();
-			var year = date.getFullYear();
-			var month = date.getMonth() + 1;
-			var day = date.getDate();
-			var hour = date.getHours();
-			var minute = date.getMinutes();
-			var second = date.getSeconds();
-			var dateshow = year + "年" + month + "月" + day + "日" + hour + "時" + minute + "分" + second + "秒";
-			return dateshow;
-			}
-			clock();
-			setInterval("clock()",1000);
-		</script>
-		</a></td>
-            </tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-            <tr></tr>
-          </tbody>
-        </table>
-        &nbsp;
-        <table cellspacing="1" cellpadding="2" border="0" bgcolor="#99ccff">
-          <tbody>
-            <tr>
-		<td width="160" height="40" bgcolor="#ecf5ff" align="center"><a href="index.html">HOME</a></td>
-		<td width="160" height="40" bgcolor="#ecf5ff" align="center"><a href="jikoshoukai.html">自己紹介</a></td>
-              <td width="160" height="40" bgcolor="#ecf5ff" align="center"><a href="">ブログ</a></td>
-		<td width="160" height="40" bgcolor="#ecf5ff" align="center"><a href="develop.html">開発したもの</a></td>
-		<td width="160" height="40" bgcolor="#ecf5ff" align="center"><a href="">リンク</a></td>
+		<td width="60" height="60" bgcolor="#ffffff" align="left">
+		<canvas id="Canvas1" width="60" height="60"></canvas>
+		<script>
+      		var canvas1 = document.getElementById("Canvas1");
+      		var context = canvas1.getContext('2d');
+		let ctx1 = canvas1.getContext('2d');
+		ctx1.beginPath();
+		let g = ctx1.createRadialGradient(30, 30, 20, 30, 30, 30);
+		g.addColorStop(0.0, 'yellow');
+		g.addColorStop(1.0, 'black');
+		ctx1.fillStyle = g;
+		ctx1.fillRect(0, 0, 60, 60);
+		ctx1.fillStyle = "#6600ff";
+		ctx1.arc(30, 30, 20, 0, 360/180*Math.PI);
+		ctx1.fill();
+
+		ctx1.beginPath();
+		ctx1.fillStyle = "#ffffff";
+		ctx1.arc(35, 30, 15, 0, 360/180*Math.PI);
+		ctx1.fill();
+    		</script>
+		</td>
+		<td width="340" height="60" bgcolor="#ffffff" align=left" valign="top"><font size="3" face="Impact">Kazuki Matsushita's Website</font>
+		<br><font size="2">色々なネタを紹介していきます</font></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href="index.html"><font size="2">HOME</font></a></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href="jikoshoukai.html"><font size="2">自己紹介</font></a></td>
+                <td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href=""><font size="2">ブログ</font></a></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href="develop.html"><font size="2">開発したもの</font></a></td>
+		<td width="80" height="60" bgcolor="#ffffff" align="center" valign="bottom"><a href=""><font size="2">リンク</font></a></td>
             </tr>
           </tbody>
         </table>
+     
+       	<hr>
 
-
-
- 	<table width="750" border="0">
-          
-            <tr>
-	<body>
-
-	<ul>
-	<td>
-	<font size="4">
-	WebGLによる立体図形（XYZキーで回転、Shift押すことで逆回転）
-	</font>
-	<p>
-	<li><a href = "./test17.html">正四面体</a>(<a href = "./test17_a.html">自動回転版</a>)</li>
-	<li><a href = "./test15.html">立方体</a>(<a href = "./test15_a.html">自動回転版</a>)</li>
-	<li><a href = "./test18.html">正八面体</a>(<a href = "./test18_a.html">自動回転版</a>)</li>
-	<br>
-	</p>
-	</td>
-	</ul>
-	</body>
-		
-            </tr>
-
-          
-        
-
-
-            </tr>
-        </table>
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
+	<table>
+        <tr>
+	<div style="font-size: 16pt; color: #000000; background-color: #ccccff">
+		開発したプログラム一覧
+	</div>
+	<tr>
 	</table>
+	</br>
+
+
+        <table width="750" border="0">
+          <tbody>
+		<td width="750" bgcolor="#ffffff" align="left" valign="bottom">
+
+
+
+
+
+
+<font size="5">計算プログラム</font>
+<hr>
+<a href="develop_longz.html"><font size="3">多倍長演算</font></a>
+<br>
+<br>
+<br>
+<br>
+
+
+<font size="5">数論</font>
+<hr>
+
+<br>
+<br>
+<br>
+<br>
+
+
+<font size="5">ゲーム</font>
+<hr>
+
+<br>
+<br>
+<br>
+<br>
+
+
+<font size="5">シミュレーション</font>
+<hr>
+
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+
+
+</font>
+
+
+
+
+
+</td>
+            <tr>
+              <td colspan="2" style="font-size : 13pt;" height="30"></td>
+            </tr>
+            <tr>
+              <td width="200" align="center">
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+
+
+
+
+
+
+</td>
+              <td>
+              
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" align="right"><a href="#0">ページ上部へ▲</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+
+	<br>
+        <table width="780" border="0">
+         
+		<tbody>
+            <tr>
+              <td colspan="2" style="font-size : 13pt;" height="30"></td>
+            </tr>
+            <td width="200" align="center">
+              
+
+              <td>
+              <table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
+              
+        
+              <table width="100%" cellspacing="1" cellpadding="2" border="0" bgcolor="#cccccc">
+                
+
+              </table>
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
+       
+
+
+
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <br>
         <br>
         </td>
       </tr>
@@ -135,13 +202,13 @@
 	<a href="">リンク</a></td>
       </tr>
       <tr>
-        <td style="height : 50px;" bgcolor="#0000ff" align="center"><font style="font-size : 8pt;" color="#ffffff">&nbsp;<br>
+        <td style="height : 50px;" bgcolor="#0000ff" align="center"><font style="font-size : 8pt;" color="#000000">&nbsp;<br>
         掲載内容の無断転載は禁じます。</font></td>
       </tr>
       <tr>
-        <td style="font-size : 10pt;color : white;" height="100" bgcolor="#0000ff" background="" align="center"><strong style="font-size : 12pt;"color="#ffffff"></strong><br>
-        MAIL:なし<br>
-        <font style="font-size : 8pt;" color="#ffffcc">Copyright (ｃ) Matsushita  　All Rights Reserved.</font></td>
+        <td style="font-size : 10pt;color : white;" height="100" bgcolor="#0000ff" background="" align="center"><strong style="font-size : 12pt;"></strong><br>
+        連絡先 : @hyperon18<br>
+        <font style="font-size : 8pt;" color="#000000">Copyright (ｃ) Kazuki Matsushita  　All Rights Reserved.</font></td>
       </tr>
     </tbody>
   </table>
